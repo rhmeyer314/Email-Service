@@ -1,4 +1,5 @@
 const express = require('express');
+const sendEmail = require('./mail');
 
 const app = express();
 
@@ -13,8 +14,15 @@ app.use(function(req, res, next) {
   });
 
 app.post("/email", (req, res) => {
-    res.json({Message: "Email Recieved"});
     console.log(req.body);
+    const {email, subject, message} = req.body;
+    sendEmail(email, subject, message, function(err, data) {
+        if (err) {
+            res.status(500).json({message: "Internal Error"});
+        } else {
+            res.json({message: "Email sent"});
+        }
+    });
 })
 
 app.listen(8080, () => {
